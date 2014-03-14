@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset = "utf-8">
+
+<head>
+  <script src = "js/d3.v3.js"></script>
+</head>
+<div id="graphic">
+  <button id = "btnData" onClick="updateChart()">New Data</button>
+</div>
+
+<script>
+  var svg = d3.selectAll("#graphic").append("svg")
+    .attr("height",400)
+    .attr("width",600);
+    
+  var padding = 3;
+  var width = parseInt(svg.style("width")) - padding;
+  var height = parseInt(svg.style("height")) - padding;    
+    
+  var line = d3.svg.line()
+             .x(function(d) { 
+                return x(d.date);
+              })
+             .y(function(d) {
+               return y(d.close); 
+             });
+             
+  var x = d3.scale.linear().range([0, width]);
+  var y = d3.scale.linear().range([height, 0]);                              
+  x.domain([0,100]);
+  y.domain([0,0.01]);
+    
+  drawChart( makeData(100) );
+  
+
+
+  function drawChart( data ){
+
+    /*data.forEach(function(d) {
+      d.date = d3.time.format("%Y-%m-%d").parse(d.Date);
+      d.close = +d.Close;
+    });*/
+
+
+    //svg.selectAll('path').transition(750).style("stroke-opacity",0).remove()
+    //svg.selectAll('path').transition().delay(1000).remove()
+    
+    svg.append("path")
+      .datum( data.line )
+      .attr('class', 'line')
+      .attr('d', line)
+      .style('fill','none')
+      .style('stroke','black');
+      
+    var breaks = svg.selectAll(".breaks")
+      .data( data.breaks )
+      .enter()
+      .append("path")
+      .attr('class','breaks')      
+      
+    breaks
+      .attr('d', line)
+      .style('fill','none')
+      .style('stroke','red');
+  }    
+
+  
+  function updateChart(){
+    var data = makeData(100); 
+    
+    var path = svg.selectAll('.line')
+      .datum( data.line )
+      
+    path.transition(2000)
+      .attr('d', line )
+        
+    var breaks = svg.selectAll(".breaks")
+      .data( data.breaks )
+    
+    breaks.enter()
+      .append("path")
+
+    breaks.transition(2000)
+      .attr('class','breaks')
+      .attr('d', line)
+      .style('fill','none')
+      .style('stroke','red');
+      
+    breaks.exit().remove();
+
+  }  
+  
+  function makeData( n ){
+    var linedata = d3.range(1,n).map(function(d){
+      return {date: d, close:Math.random(d)/100}
+    });
+    
+    var nbreaks = Math.round(Math.random() * 4)
+    nbreaks = nbreaks < 1 ? 1 : nbreaks;
+    var breakdata = [];
+    d3.range(0,nbreaks).forEach(function(d, i){
+      var randombreak = Math.random()/100;
+      breakdata.push(
+        [
+          {date:0+d*(n/nbreaks),close:randombreak},
+          {date:0+(d+1)*(n/nbreaks),close:randombreak}
+        ]
+      );
+    });
+    
+    return {line:linedata,breaks:breakdata};
+  }
+  
+</script>
