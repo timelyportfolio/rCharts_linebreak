@@ -18,6 +18,7 @@
   var height = parseInt(svg.style("height")) - padding;    
     
   var line = d3.svg.line()
+             .interpolate("basis")
              .x(function(d) { 
                 return x(d.date);
               })
@@ -50,7 +51,8 @@
       .attr('class', 'line')
       .attr('d', line)
       .style('fill','none')
-      .style('stroke','black');
+      .style('stroke','black')
+      .style('stroke-width',"1.5px");
       
     var breaks = svg.selectAll(".breaks")
       .data( data.breaks )
@@ -71,7 +73,7 @@
     var path = svg.selectAll('.line')
       .datum( data.line )
       
-    path.transition(2000)
+    path.transition().duration(2000)
       .attr('d', line )
         
     var breaks = svg.selectAll(".breaks")
@@ -80,7 +82,7 @@
     breaks.enter()
       .append("path")
 
-    breaks.transition(2000)
+    breaks.transition().duration(2000)
       .attr('class','breaks')
       .attr('d', line)
       .style('fill','none')
