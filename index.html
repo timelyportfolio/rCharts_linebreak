@@ -18,7 +18,6 @@
   var height = parseInt(svg.style("height")) - padding;    
     
   var line = d3.svg.line()
-             .interpolate("basis")
              .x(function(d) { 
                 return x(d.date);
               })
