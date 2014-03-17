@@ -80,6 +80,11 @@
     
     breaks.enter()
       .append("path")
+      .attr('class','breaks')
+      .attr('d', breaks.attr('d'))
+      .style('fill','none')
+      .style('stroke','red');      
+
 
     breaks.transition().duration(2000)
       .attr('class','breaks')
@@ -87,7 +92,9 @@
       .style('fill','none')
       .style('stroke','red');
       
-    breaks.exit().remove();
+    breaks.exit()
+      .transition().duration(2000).style("opacity",0.01)
+      .remove();
 
   }  
   
