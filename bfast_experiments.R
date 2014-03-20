@@ -308,14 +308,14 @@ bfastList <- sapply(
   }
 )
 #bfastList <- lapply(1:length(bfastList),function(x){return(bfastList[[x]][1])})
-#names(bfastList) <- paste0("h", seq(from=0.05,to=0.2,by=0.05)*100)
+#names(bfastList) <- paste0("h", seq(from=0.05,to=0.2,by=0.05))
 
 #use previous graph and just change data to our list
 bP$params$data = bfastList
 bP$setTemplate(
   afterScript = gsub(
     x= bP$templates$afterScript,
-    pattern = "SP500",
+    pattern = "h005",
     replacement = names(bfastList[1])
   )
 )

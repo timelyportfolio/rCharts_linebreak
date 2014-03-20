@@ -25,7 +25,7 @@
       
       line = d3.svg.line()
                .x(function(d) { 
-                  return x(d[params.x]);
+                  return x(new Date(d[params.x]*60*60*24*1000));
                 })
                .y(function(d) {
                  return y(d[params.y]); 
@@ -33,17 +33,17 @@
                
       linebreak = d3.svg.line()
                .x(function(d) { 
-                  return x(d[params.x]);
+                  return x(new Date(d[params.x]*60*60*24*1000));
                 })
                .y(function(d) {
                   return this.getPointAtLength(y(d[params.y])).y
                });
                
-      x = d3.scale.linear().range([0, width]);
+      x = d3.time.scale().range([0, width]);
       y = d3.scale.linear().range([height, 0]);                              
 
       
-      x.domain(d3.extent( data.line, function(d) {return d[params.x]} ));
+      x.domain(d3.extent( data.line, function(d) {return new Date(d[params.x]*60*60*24*1000)} ));
       y.domain(d3.extent( data.line, function(d) {return d[params.y]} ));
       //y.domain([-0.02,1.2]);
       
@@ -72,7 +72,7 @@
       var xAxis = d3.svg.axis()
                         .scale(x)
                         .orient("bottom")
-                        .tickFormat(d3.format("#000"))
+                        
                         
       svg.append("g")
         .attr("class", "axis")
@@ -102,7 +102,7 @@
   
     
     function updateChart( data ){
-      x.domain(d3.extent( data.line, function(d) {return d[params.x]} ));
+      x.domain(d3.extent( data.line, function(d) {return new Date(d[params.x]*60*60*24*1000)} ));
       //y.domain(d3.extent( data.line, function(d) {return d[params.y]} ));      
               
       var breaks = chart.selectAll(".breaks")
@@ -126,12 +126,12 @@
           .attr('d', line);
   
             
-      var lineexit = d3.svg.line()
+      /*var lineexit = d3.svg.line()
                       .x(function(d){return x(d[params.x])})
                       .y(function(d){
                         return y(lasty[data.breaks.length-1]);
                       })
-      
+      */
       breaks.exit()
         .transition().duration(1000)
         .style("stroke", "gray")        
