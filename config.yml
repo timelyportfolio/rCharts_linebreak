@@ -1,0 +1,8 @@
+rCharts_linebreak:
+  jshead:
+    - js/d3.v3.js
+    - js/angular.min.js
+  cdn:
+    jshead:
+      - http://d3js.org/d3.v3.min.js
+      - https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js

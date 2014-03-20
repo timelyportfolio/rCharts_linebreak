@@ -1,0 +1,147 @@
+  <script>
+    var svg, chart,  padding, width, height, line, linebreak, x, y;
+    var params = {{{ chartParams }}},
+        data = {{{ data }}};
+    
+    function drawChart( data ){
+  
+      svg = d3.selectAll("#graphic").append("svg")
+        .attr("height", params.height)
+        .attr("width", params.width);
+        
+      chart = svg.append("g")
+      if (!(params.margin)) {
+        params.margin = {
+          left : 50,
+          right: 50,
+          top : 50,
+          bottom : 50
+        }
+      }
+      chart.attr("transform", "translate(" + params.margin.left + "," + params.margin.bottom + ")")
+      
+      width = params.width - params.margin.left - params.margin.right;
+      height = params.height - params.margin.top - params.margin.bottom;    
+      
+      line = d3.svg.line()
+               .x(function(d) { 
+                  return x(d[params.x]);
+                })
+               .y(function(d) {
+                 return y(d[params.y]); 
+               });
+               
+      linebreak = d3.svg.line()
+               .x(function(d) { 
+                  return x(d[params.x]);
+                })
+               .y(function(d) {
+                  return this.getPointAtLength(y(d[params.y])).y
+               });
+               
+      x = d3.scale.linear().range([0, width]);
+      y = d3.scale.linear().range([height, 0]);                              
+
+      
+      x.domain(d3.extent( data.line, function(d) {return d[params.x]} ));
+      y.domain(d3.extent( data.line, function(d) {return d[params.y]} ));
+      //y.domain([-0.02,1.2]);
+      
+      
+      chart.append("path")
+        .datum( data.line )
+        .attr('class', 'line')
+        .attr('d', line)
+        .style('fill','none')
+        .style('stroke','black')
+        .style('stroke-width',"1.5px");
+        
+      var breaks = chart.selectAll(".breaks")
+        .data( data.breaks )
+        .enter()
+        .append("path")
+        .attr('class','breaks')      
+        
+      breaks
+        .attr('d', line)
+        .style('fill','none')
+        .style('stroke','red');
+      
+      
+      //Define Y axis
+      var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient("bottom")
+                        .tickFormat(d3.format("#000"))
+                        
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + params.margin.left + "," + (height + params.margin.bottom) + ")")
+        .call(xAxis);
+                  
+      //Define Y axis
+      var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient("left")
+                        .ticks(5);
+      
+      //Create Y axis
+      svg.append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(" + params.margin.left + "," + params.margin.bottom + ")")
+          .call(yAxis);
+          
+      //clean up the axes without css stylesheet
+      svg.selectAll(".axis text")
+        .style("font-size","11px")
+      svg.selectAll(".axis path,line")
+        .style("stroke", "#000")
+        .style("fill", "none")
+        .style("shape-rendering" ,"crispEdges")
+    }    
+  
+    
+    function updateChart( data ){
+      x.domain(d3.extent( data.line, function(d) {return d[params.x]} ));
+      //y.domain(d3.extent( data.line, function(d) {return d[params.y]} ));      
+              
+      var breaks = chart.selectAll(".breaks")
+      var lasty = breaks.data().map(function(d){return d[0].value})
+      
+      breaks = breaks
+        .data( data.breaks );
+            
+      breaks.enter()
+        .append("path")
+        .attr('class','breaks')
+        .attr('d', d3.select(breaks[0][breaks[0].filter(function(el){
+          return Boolean(d3.select(el).attr("d"))
+        }).length-1]).attr('d'))
+        .style('fill','none')
+        .style('stroke','red');      
+        
+      breaks.transition().duration(200).delay(800)
+        .attr('d', linebreak)
+        .transition().duration(500).delay(1000)
+          .attr('d', line);
+  
+            
+      var lineexit = d3.svg.line()
+                      .x(function(d){return x(d[params.x])})
+                      .y(function(d){
+                        return y(lasty[data.breaks.length-1]);
+                      })
+      
+      breaks.exit()
+        .transition().duration(1000)
+        .attr("d",lineexit)     
+        //.style("opacity",0.01)
+        .remove();
+        
+      var path = chart.selectAll('.line')
+        .datum( data.line )
+        
+      path.transition().duration(1200).delay(1000)
+        .attr('d', line )
+    }    
+  </script>
