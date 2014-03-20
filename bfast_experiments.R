@@ -195,7 +195,7 @@ bfast_list <- function ( bf, bfName ){
     ,tail(as.xts(bf$output[[1]]$Tt),1)
   )
   breaksList <- apply(
-    matrix(1:nrow(breaks),ncol=4,byrow=F),
+    matrix(1:nrow(breaks),ncol=nrow(breaks)/2,byrow=F),
     MARGIN=2,
     function(x){
       return(data.frame(
@@ -316,7 +316,7 @@ bP$setTemplate(
   afterScript = gsub(
     x= bP$templates$afterScript,
     pattern = "SP500",
-    replacement = names(bfastList)[1]
+    replacement = names(bfastList[1])
   )
 )
 bP

@@ -106,7 +106,7 @@
       //y.domain(d3.extent( data.line, function(d) {return d[params.y]} ));      
               
       var breaks = chart.selectAll(".breaks")
-      var lasty = breaks.data().map(function(d){return d[0].value})
+      var lasty = breaks.data().map(function(d){return d[0][params.x]})
       
       breaks = breaks
         .data( data.breaks );
@@ -134,8 +134,11 @@
       
       breaks.exit()
         .transition().duration(1000)
-        .attr("d",lineexit)     
-        //.style("opacity",0.01)
+        .style("stroke", "gray")        
+        .style("stroke-width",breaks.style("stroke-width")*3)
+        .transition().delay(1500).duration(1000)
+        //.attr("d",lineexit)     
+        .style("opacity",0.01)
         .remove();
         
       var path = chart.selectAll('.line')
